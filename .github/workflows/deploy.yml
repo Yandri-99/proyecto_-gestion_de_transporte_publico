@@ -2,15 +2,14 @@ name: Transporte Publico — CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-
   # ── JOB 1: TESTS ──────────────────────────────────────────
   test:
-    name: Run Tests
+    name: Run Django Tests
     runs-on: ubuntu-latest
 
     services:
@@ -20,69 +19,60 @@ jobs:
           POSTGRES_DB: llumiquinga_transporte_db
           POSTGRES_USER: llumiquinga_transporte_user
           POSTGRES_PASSWORD: shopapi_pass
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
-        with:
-          version: "latest"
+        uses: astral-sh/setup-uv@v5
 
-      - name: Set up Python
-        run: uv python install 3.12
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
       - name: Install dependencies
         run: uv sync
 
       - name: Run tests
         env:
-          SECRET_KEY: test-secret-key-for-ci-only
+          SECRET_KEY: test-key-not-for-production
           DEBUG: True
-          ALLOWED_HOSTS: localhost,127.0.0.1
           DB_NAME: llumiquinga_transporte_db
           DB_USER: llumiquinga_transporte_user
           DB_PASSWORD: shopapi_pass
           DB_HOST: localhost
           DB_PORT: 5432
-        run: uv run python manage.py test transporte --verbosity=2
+          TEST_DB_NAME: llumiquinga_transporte_db
+          CORS_ALLOW_ALL_ORIGINS: True
+          ALLOWED_HOSTS: "*"
+        run: uv run python manage.py test transporte --verbosity=2 --noinput
 
   # ── JOB 2: DEPLOY ─────────────────────────────────────────
   deploy:
     name: Deploy to DigitalOcean Droplet
     needs: test
-    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VPSSSHKEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy to Droplet via SSH
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ${{ secrets.VPS_USERNAME }}
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-        run: |
-          ssh $VPS_USER@$VPS_HOST << 'ENDSSH'
-            set -e
-            
-            # Forzar la carga de ejecutables de uv en sesiones no interactivas
+      - name: Deploy to Droplet via SSH Action
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPSSSHKEY }}
+          script_stop: true # Detiene el pipeline inmediatamente si un comando falla
+          script: |
+            # 1. Asegurar ejecutables de uv en la sesión SSH
             export PATH="/root/.local/bin:$PATH"
 
             echo "── 1. Actualizando código desde GitHub ──"
@@ -104,9 +94,7 @@ jobs:
             systemctl restart nginx
 
             echo "── 6. Verificando estado del servicio ──"
-            sleep 2
+            sleep 6
             systemctl is-active gunicorn-llumiquinga_transporte
-
-            echo "¡Despliegue automático en Main completado exitosamente!"
-          ENDSSH
-          
+            
+            echo "¡Despliegue automático completado con éxito total!"
