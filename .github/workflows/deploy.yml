@@ -86,7 +86,7 @@ jobs:
             export PATH="/root/.local/bin:$PATH"
 
             echo "── 1. Actualizando código desde GitHub ──"
-            cd $DEPLOY_PATH
+            cd /opt/proyecto_-gestion_de_transporte_publico
             git fetch origin
             git reset --hard origin/main
 
