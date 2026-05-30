@@ -1,0 +1,111 @@
+name: Transporte Publico — CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, PRIMER-CORTE ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+
+  # ── JOB 1: TESTS ──────────────────────────────────────────
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: llumiquinga_transporte_db
+          POSTGRES_USER: llumiquinga_transporte_user
+          POSTGRES_PASSWORD: shopapi_pass_123
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run tests
+        env:
+          SECRET_KEY: test-secret-key-for-ci-only
+          DEBUG: True
+          ALLOWED_HOSTS: localhost,127.0.0.1
+          DB_NAME: llumiquinga_transporte_db
+          DB_USER: llumiquinga_transporte_user
+          DB_PASSWORD: shopapi_pass_123
+          DB_HOST: localhost
+          DB_PORT: 5432
+        run: uv run python manage.py test --verbosity=2
+
+  # ── JOB 2: DEPLOY ─────────────────────────────────────────
+  deploy:
+    name: Deploy to DigitalOcean Droplet
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/PRIMER-CORTE'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPSSSHKEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Droplet via SSH
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USERNAME }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh $VPS_USER@$VPS_HOST << 'ENDSSH'
+            set -e
+            
+            # Forzar la carga de ejecutables de uv en sesiones no interactivas
+            export PATH="/root/.local/bin:$PATH"
+
+            echo "── 1. Actualizando código desde GitHub ──"
+            cd $DEPLOY_PATH
+            git fetch origin
+            git reset --hard origin/${{ github.ref_name }}
+
+            echo "── 2. Sincronizando dependencias con uv ──"
+            uv sync --frozen
+
+            echo "── 3. Aplicando migraciones de Base de Datos ──"
+            uv run python manage.py migrate --noinput
+
+            echo "── 4. Recolectando archivos estáticos ──"
+            uv run python manage.py collectstatic --noinput --clear
+
+            echo "── 5. Reiniciando Gunicorn y Nginx ──"
+            systemctl restart gunicorn-llumiquinga_transporte
+            systemctl restart nginx
+
+            echo "── 6. Verificando estado del servicio ──"
+            sleep 2
+            systemctl is-active gunicorn-llumiquinga_transporte
+
+            echo "¡Despliegue de Transporte Público completado exitosamente!"
+          ENDSSH
