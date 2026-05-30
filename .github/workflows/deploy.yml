@@ -98,3 +98,4 @@ jobs:
             systemctl is-active gunicorn-llumiquinga_transporte
             
             echo "¡Despliegue automático completado con éxito total!"
+            
