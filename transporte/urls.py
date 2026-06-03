@@ -10,6 +10,7 @@ from transporte.views.bus      import BusViewSet
 from transporte.views.driver   import DriverViewSet
 from transporte.views.trip     import TripViewSet
 from transporte.views.ticket   import TicketViewSet
+from transporte.views.stop     import StopViewSet
 from transporte.serializers.auth import CustomTokenView
 
 router = DefaultRouter()
@@ -19,6 +20,7 @@ router.register('buses',      BusViewSet,     basename='bus')
 router.register('drivers',    DriverViewSet,  basename='driver')
 router.register('trips',      TripViewSet,    basename='trip')
 router.register('tickets',    TicketViewSet,  basename='ticket')
+router.register('stops',      StopViewSet,    basename='stop')
 
 urlpatterns = [
     path('health/',             health_check),

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from transporte.models import Route, Bus, Driver, Trip, Ticket
+from transporte.models import Route, Bus, Driver, Trip, Ticket, Stop
 
 
 @admin.register(Route)
@@ -36,6 +36,13 @@ class TripAdmin(admin.ModelAdmin):
     search_fields   = ['route__name', 'bus__plate', 'driver__user__username']
     inlines         = [TicketInline]
     readonly_fields = ['created_at', 'updated_at']
+
+
+@admin.register(Stop)
+class StopAdmin(admin.ModelAdmin):
+    list_display  = ['id', 'name', 'route', 'stop_order', 'is_active']
+    list_filter   = ['is_active', 'route']
+    search_fields = ['name', 'address']
 
 
 @admin.register(Ticket)

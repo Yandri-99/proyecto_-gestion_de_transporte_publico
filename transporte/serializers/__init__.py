@@ -10,3 +10,4 @@ from .bus     import BusSerializer
 from .driver  import DriverSerializer
 from .trip    import TripSerializer
 from .ticket  import TicketSerializer
+from .stop    import StopSerializer

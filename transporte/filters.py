@@ -1,6 +1,6 @@
 import django_filters
 from django.db import models
-from transporte.models import Route, Bus, Driver, Trip, Ticket
+from transporte.models import Route, Bus, Driver, Trip, Ticket, Stop
 
 
 class RouteFilter(django_filters.FilterSet):
@@ -51,6 +51,14 @@ class TripFilter(django_filters.FilterSet):
     class Meta:
         model  = Trip
         fields = ['status', 'route', 'bus', 'driver']
+
+
+class StopFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model  = Stop
+        fields = ['route', 'is_active']
 
 
 class TicketFilter(django_filters.FilterSet):
