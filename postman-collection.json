@@ -1,0 +1,495 @@
+{
+  "info": {
+    "name": "Transporte Público API",
+    "description": "API REST para gestión de transporte público",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"juan\",\n  \"email\": \"juan@mail.com\",\n  \"password\": \"Pass1234!\",\n  \"password2\": \"Pass1234!\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/register/", "host": ["{{base_url}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin1234!\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/login/", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"<refresh_token>\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/token/refresh/", "host": ["{{base_url}}"], "path": ["api", "auth", "token", "refresh"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"<refresh_token>\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/api/auth/logout/", "host": ["{{base_url}}"], "path": ["api", "auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/users/", "host": ["{{base_url}}"], "path": ["api", "users"] }
+          }
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/users/profile/", "host": ["{{base_url}}"], "path": ["api", "users", "profile"] }
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"first_name\": \"Juan\",\n  \"last_name\": \"Pérez\"\n}" },
+            "url": { "raw": "{{base_url}}/api/users/profile/", "host": ["{{base_url}}"], "path": ["api", "users", "profile"] }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"current_password\": \"Pass1234!\",\n  \"new_password\": \"NuevaPass1!\",\n  \"new_password2\": \"NuevaPass1!\"\n}" },
+            "url": { "raw": "{{base_url}}/api/users/change-password/", "host": ["{{base_url}}"], "path": ["api", "users", "change-password"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Routes",
+      "item": [
+        {
+          "name": "List Routes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/routes/", "host": ["{{base_url}}"], "path": ["api", "routes"] }
+          }
+        },
+        {
+          "name": "Create Route",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Ruta Norte\",\n  \"origin\": \"Quito\",\n  \"destination\": \"Ibarra\",\n  \"distance\": 120.00,\n  \"base_price\": 8.50,\n  \"duration\": \"03:00:00\",\n  \"is_active\": true\n}" },
+            "url": { "raw": "{{base_url}}/api/routes/", "host": ["{{base_url}}"], "path": ["api", "routes"] }
+          }
+        },
+        {
+          "name": "Get Route Detail",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/routes/1/", "host": ["{{base_url}}"], "path": ["api", "routes", "1"] }
+          }
+        },
+        {
+          "name": "Update Route",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"base_price\": 10.00\n}" },
+            "url": { "raw": "{{base_url}}/api/routes/1/", "host": ["{{base_url}}"], "path": ["api", "routes", "1"] }
+          }
+        },
+        {
+          "name": "Delete Route",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/routes/1/", "host": ["{{base_url}}"], "path": ["api", "routes", "1"] }
+          }
+        },
+        {
+          "name": "Route Trips",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/routes/1/trips/", "host": ["{{base_url}}"], "path": ["api", "routes", "1", "trips"] }
+          }
+        },
+        {
+          "name": "Search Routes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/routes/?search=Norte&is_active=true", "host": ["{{base_url}}"], "path": ["api", "routes"], "query": [{ "key": "search", "value": "Norte" }, { "key": "is_active", "value": "true" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Buses",
+      "item": [
+        {
+          "name": "List Buses",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/buses/", "host": ["{{base_url}}"], "path": ["api", "buses"] }
+          }
+        },
+        {
+          "name": "Create Bus",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"plate\": \"PCC-1234\",\n  \"brand\": \"Mercedes\",\n  \"model\": \"Sprinter\",\n  \"year\": 2022,\n  \"capacity\": 40,\n  \"is_active\": true\n}" },
+            "url": { "raw": "{{base_url}}/api/buses/", "host": ["{{base_url}}"], "path": ["api", "buses"] }
+          }
+        },
+        {
+          "name": "Get Bus Detail",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/buses/1/", "host": ["{{base_url}}"], "path": ["api", "buses", "1"] }
+          }
+        },
+        {
+          "name": "Update Bus",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"capacity\": 45\n}" },
+            "url": { "raw": "{{base_url}}/api/buses/1/", "host": ["{{base_url}}"], "path": ["api", "buses", "1"] }
+          }
+        },
+        {
+          "name": "Delete Bus",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/buses/1/", "host": ["{{base_url}}"], "path": ["api", "buses", "1"] }
+          }
+        },
+        {
+          "name": "Available Buses",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/buses/available/", "host": ["{{base_url}}"], "path": ["api", "buses", "available"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Drivers",
+      "item": [
+        {
+          "name": "List Drivers",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/drivers/", "host": ["{{base_url}}"], "path": ["api", "drivers"] }
+          }
+        },
+        {
+          "name": "Create Driver",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"user\": 1,\n  \"license_number\": \"LIC-001\",\n  \"phone\": \"0999999999\",\n  \"is_active\": true\n}" },
+            "url": { "raw": "{{base_url}}/api/drivers/", "host": ["{{base_url}}"], "path": ["api", "drivers"] }
+          }
+        },
+        {
+          "name": "Get Driver Detail",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/drivers/1/", "host": ["{{base_url}}"], "path": ["api", "drivers", "1"] }
+          }
+        },
+        {
+          "name": "Update Driver",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"0988888888\"\n}" },
+            "url": { "raw": "{{base_url}}/api/drivers/1/", "host": ["{{base_url}}"], "path": ["api", "drivers", "1"] }
+          }
+        },
+        {
+          "name": "Delete Driver",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/drivers/1/", "host": ["{{base_url}}"], "path": ["api", "drivers", "1"] }
+          }
+        },
+        {
+          "name": "Available Drivers",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/drivers/available/", "host": ["{{base_url}}"], "path": ["api", "drivers", "available"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Trips",
+      "item": [
+        {
+          "name": "List Trips",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/trips/", "host": ["{{base_url}}"], "path": ["api", "trips"] }
+          }
+        },
+        {
+          "name": "Create Trip",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"bus\": 1,\n  \"route\": 1,\n  \"driver\": 1,\n  \"departure_time\": \"2026-06-03T10:00:00-05:00\",\n  \"arrival_time\": \"2026-06-03T13:00:00-05:00\",\n  \"price\": 8.50,\n  \"status\": \"scheduled\"\n}" },
+            "url": { "raw": "{{base_url}}/api/trips/", "host": ["{{base_url}}"], "path": ["api", "trips"] }
+          }
+        },
+        {
+          "name": "Get Trip Detail",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/trips/1/", "host": ["{{base_url}}"], "path": ["api", "trips", "1"] }
+          }
+        },
+        {
+          "name": "Start Trip",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/trips/1/start/", "host": ["{{base_url}}"], "path": ["api", "trips", "1", "start"] }
+          }
+        },
+        {
+          "name": "Complete Trip",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/trips/1/complete/", "host": ["{{base_url}}"], "path": ["api", "trips", "1", "complete"] }
+          }
+        },
+        {
+          "name": "Cancel Trip",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/trips/1/cancel/", "host": ["{{base_url}}"], "path": ["api", "trips", "1", "cancel"] }
+          }
+        },
+        {
+          "name": "Trip Schedule",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/trips/schedule/", "host": ["{{base_url}}"], "path": ["api", "trips", "schedule"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "List Tickets",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/tickets/", "host": ["{{base_url}}"], "path": ["api", "tickets"] }
+          }
+        },
+        {
+          "name": "Create Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"trip\": 1,\n  \"passenger_name\": \"Juan Pérez\",\n  \"passenger_id\": \"1234567890\",\n  \"seat_number\": 1\n}" },
+            "url": { "raw": "{{base_url}}/api/tickets/", "host": ["{{base_url}}"], "path": ["api", "tickets"] }
+          }
+        },
+        {
+          "name": "Get Ticket Detail",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/tickets/1/", "host": ["{{base_url}}"], "path": ["api", "tickets", "1"] }
+          }
+        },
+        {
+          "name": "Cancel Ticket",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/tickets/1/cancel/", "host": ["{{base_url}}"], "path": ["api", "tickets", "1", "cancel"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stops",
+      "item": [
+        {
+          "name": "List Stops",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/stops/", "host": ["{{base_url}}"], "path": ["api", "stops"] }
+          }
+        },
+        {
+          "name": "Create Stop",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"route\": 1,\n  \"name\": \"Terminal Quitumbe\",\n  \"address\": \"Av. Quitumbe Ñan y Av. Mariscal Sucre\",\n  \"latitude\": -0.299722,\n  \"longitude\": -78.549722,\n  \"stop_order\": 1,\n  \"is_active\": true\n}" },
+            "url": { "raw": "{{base_url}}/api/stops/", "host": ["{{base_url}}"], "path": ["api", "stops"] }
+          }
+        },
+        {
+          "name": "Get Stop Detail",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/stops/1/", "host": ["{{base_url}}"], "path": ["api", "stops", "1"] }
+          }
+        },
+        {
+          "name": "Update Stop",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Terminal Carcelén\"\n}" },
+            "url": { "raw": "{{base_url}}/api/stops/1/", "host": ["{{base_url}}"], "path": ["api", "stops", "1"] }
+          }
+        },
+        {
+          "name": "Delete Stop",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/stops/1/", "host": ["{{base_url}}"], "path": ["api", "stops", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/health/", "host": ["{{base_url}}"], "path": ["api", "health"] }
+          }
+        }
+      ]
+    }
+  ]
+}
