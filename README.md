@@ -57,13 +57,13 @@ DB_PORT=5432
 ## Endpoints de la API
 
 ### Autenticación
-| Metodo | Endpoint | Que hace | Token |
-|--------|----------|----------|-------|
-| POST | `/api/auth/register/` | Registrar usuario nuevo | No |
-| POST | `/api/auth/login/` | Iniciar sesion y obtener JWT | No |
-| POST | `/api/auth/token/refresh/` | Refrescar token | No |
-| POST | `/api/auth/token/verify/` | Verificar si token es valido | No |
-| POST | `/api/auth/logout/` | Cerrar sesion | Si |
+| Metodo | Endpoint | Que hace 
+|--------|----------|----------|
+| POST | `/api/auth/register/` | Registrar usuario nuevo 
+| POST | `/api/auth/login/` | Iniciar sesion y obtener JWT 
+| POST | `/api/auth/token/refresh/` | Refrescar token 
+| POST | `/api/auth/token/verify/` | Verificar si token es valido 
+| POST | `/api/auth/logout/` | Cerrar sesion 
 
 ### Usuarios (solo admin)
 | Metodo | Endpoint | Que hace |
